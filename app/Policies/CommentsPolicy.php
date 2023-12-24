@@ -19,7 +19,7 @@ class CommentsPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function updateComment(User $user, Comment $comments): bool
+    public function updateComment(User $user): bool
     {
         return $user->hasPermissionTo(PermissionComments::UPDATE_COMMENT, 'api');
     }

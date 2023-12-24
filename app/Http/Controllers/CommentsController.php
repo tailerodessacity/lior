@@ -8,7 +8,7 @@ use App\Http\Resources\CommentResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\Comment;
 use App\Models\Post;
-use App\Notifications\AddNewComment;
+use App\Services\CommentNotifyService;
 use App\Services\CommentService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +16,10 @@ use Illuminate\Support\Facades\Log;
 
 class CommentsController extends Controller
 {
-    public function __construct(private readonly CommentService $commentService)
+    public function __construct(
+        private readonly CommentService $commentService,
+        private readonly CommentNotifyService $commentNotifyService
+    )
     {
     }
 
@@ -33,10 +36,7 @@ class CommentsController extends Controller
     {
         try {
             $comment = $this->commentService->create($request->input(), $post);
-
-            // get all users emails from this post
-            auth()->user()->notify((new AddNewComment()));
-
+            $this->commentNotifyService->notify($post);
             $data = CommentResource::make($comment)->resolve();
             return new ApiResponse($data);
         } catch (AuthorizationException $e) {
@@ -57,8 +57,8 @@ class CommentsController extends Controller
     public function update(UpdateCommentsRequest $request, Comment $comment)
     {
         try {
-            $comment = $this->commentService->update($request->input(), $comment);
-            return new ApiResponse(['Comment was updated']);
+            $comment->updateOrFail($request->input());
+            return new ApiResponse(['Updated post successfully']);
         } catch (AuthorizationException $e) {
             Log::error("Error updating comment: " . $e->getMessage());
             return new ApiResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
@@ -77,8 +77,8 @@ class CommentsController extends Controller
     public function destroy(Comment $comment)
     {
         try {
-            $comment = $this->commentService->delete($comment);
-            return new ApiResponse(['Comment was deleted']);
+           $comment->deleteOrFail();
+            return new ApiResponse(['Deleted post successfully']);
         } catch (AuthorizationException $e) {
             Log::error("Error deleting comment: " . $e->getMessage());
             return new ApiResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);

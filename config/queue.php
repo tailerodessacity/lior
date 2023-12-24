@@ -38,8 +38,8 @@ return [
             'driver' => 'mongodb',
             'connection' => 'mongodb-job',
             'table' => 'jobs',
-            'queue' => 'default',
-            'expire' => 60,
+            'queue' => 'notification_comments',
+            'expire' => 600,
         ],
 
         'beanstalkd' => [

@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\PermissionPost;
 use App\Http\Requests\StorePostsRequest;
 use App\Http\Requests\UpdatePostsRequest;
 use App\Http\Resources\PostResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\Post;
-use App\Http\Responses\PostResponse;
-use App\Models\User;
-use App\Notifications\AddNewComment;
 use App\Services\PostService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
@@ -32,7 +28,6 @@ class PostsController extends Controller
 
     public function store(StorePostsRequest $request)
     {
-        dispatch(auth()->user()->notify((new AddNewComment())));
         try {
             $post = $this->postService->create($request->input(), auth()->user()->getAuthIdentifier());
             $data = PostResource::make($post)->resolve();
@@ -55,9 +50,8 @@ class PostsController extends Controller
     public function update(UpdatePostsRequest $request, Post $post)
     {
         try {
-            $post = $this->postService->update($request->input(), $post);
-            $data = PostResource::make($post)->resolve();
-            return new ApiResponse($data);
+            $post->updateOrFail($request->input());
+            return new ApiResponse(['Updated post successfully']);
         } catch (AuthorizationException $e) {
             Log::error("Error updating post: " . $e->getMessage());
             return new ApiResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
@@ -71,9 +65,11 @@ class PostsController extends Controller
 
     public function destroy(Post $post)
     {
+        $this->authorize('deletePost', $post);
+
         try {
-             $this->postService->delete($post);
-             return new ApiResponse(['Post was created']);
+            $post->deleteOrFail();
+            return new ApiResponse(['Deleted post successfully']);
         } catch (AuthorizationException $e) {
             Log::error("Error deleting post: " . $e->getMessage());
             return new ApiResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);

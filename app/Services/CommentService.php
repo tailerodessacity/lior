@@ -24,16 +24,4 @@ class CommentService
 
         return $comment;
     }
-
-    public function update(array $data, Comment $comment): Post
-    {
-        $this->authorize('updateComment', $comment);
-        return $comment->updateOrFail($data);
-    }
-
-    public function delete(Comment $comment): Post
-    {
-        $this->authorize('deleteComment', $comment);
-        return $comment->delete();
-    }
 }

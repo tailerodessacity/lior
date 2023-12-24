@@ -17,7 +17,9 @@ return new class extends Migration
                 $table->string('email')->unique();
                 $table->text('text');
                 $table->boolean('is_approved')->default(false);
-                $table->foreignId('post_id')->constrained('posts', 'id');
+                $table->foreignId('post_id')->constrained('posts')
+                    ->onDelete('cascade')
+                    ->onUpdate('cascade');
                 $table->timestamps();
         });
     }

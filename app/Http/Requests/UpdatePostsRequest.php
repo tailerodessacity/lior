@@ -8,8 +8,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePostsRequest extends FormRequest
 {
-    use PostResponse;
-
     /**
      * Determine if the user is authorized to make this request.
      */

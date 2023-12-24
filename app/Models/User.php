@@ -58,4 +58,9 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public function getEmail(): string
+    {
+        return $this->email;
+    }
+
 }

@@ -19,7 +19,7 @@ class PostsPolicy
         return $user->hasPermissionTo(PermissionPost::UPDATE_POST, 'api');
     }
 
-    public function destroyPost(User $user)
+    public function deletePost(User $user)
     {
         return $user->hasPermissionTo(PermissionPost::DELETE_POST, 'api');
     }

@@ -41,8 +41,8 @@ Route::group(['middleware' => ['api']], function () {
 Route::group(['middleware' => ['api']], function () {
     Route::get('posts/{post}/comments', [CommentsController::class, 'index']);
     Route::post('posts/{post}/comment', [CommentsController::class, 'store']);
-    Route::patch('comments/{comment}', [CommentsController::class, 'update']);
-    Route::delete('comments/{comment}', [CommentsController::class, 'destroy']);
+    Route::patch('comment/{comment}', [CommentsController::class, 'update']);
+    Route::delete('comment/{comment}', [CommentsController::class, 'destroy']);
 });
 
 
