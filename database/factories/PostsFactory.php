@@ -12,6 +12,8 @@ class PostsFactory extends Factory
 {
     protected $model = Post::class;
 
+
+
     /**
      * Define the model's default state.
      *
