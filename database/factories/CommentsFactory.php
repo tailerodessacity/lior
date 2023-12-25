@@ -22,7 +22,7 @@ class CommentsFactory extends Factory
         return [
             'name' => $this->faker->name,
             'email' => $this->faker->email,
-            'is_approved' => $this->faker->boolean,
+            'is_approved' => true,
             'post_id' => 1,
             'text' => $this->faker->text(400),
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),

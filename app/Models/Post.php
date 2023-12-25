@@ -36,6 +36,13 @@ class Post extends Model
         return $query->where('is_approved', false);
     }
 
+    public function approvedComments()
+    {
+        return $this->comments()
+            ->isApproved()
+            ->get();
+    }
+
     public function getId(): int
     {
         return $this->id;

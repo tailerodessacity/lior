@@ -25,7 +25,8 @@ class CommentsController extends Controller
 
     public function index(Post $post)
     {
-        $approvedComments = $post->newQueryWithoutScope('approved')->get();
+        $approvedComments = $post->approvedComments();
+
         return new ApiResponse($approvedComments->toArray());
     }
 

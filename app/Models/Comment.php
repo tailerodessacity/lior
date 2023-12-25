@@ -34,4 +34,10 @@ class Comment extends Model
     {
         return new CommentsFactory();
     }
+
+    public function scopeIsApproved($query)
+    {
+        return $query->where('is_approved', true);
+    }
+
 }
