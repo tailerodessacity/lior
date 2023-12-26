@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('comments', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
-                $table->string('email')->unique();
+                $table->string('email');
                 $table->text('text');
                 $table->boolean('is_approved')->default(false);
                 $table->foreignId('post_id')->constrained('posts')

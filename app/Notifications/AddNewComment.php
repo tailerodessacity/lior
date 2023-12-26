@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Mail\AddNewCommentMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
