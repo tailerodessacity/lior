@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCommentsRequest;
 use App\Http\Requests\UpdateCommentsRequest;
 use App\Http\Resources\CommentResource;
-use App\Http\Responses\ApiResponse;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Services\CommentNotifyService;
@@ -26,8 +25,7 @@ class CommentsController extends Controller
     public function index(Post $post)
     {
         $approvedComments = $post->approvedComments();
-
-        return new ApiResponse($approvedComments->toArray());
+        return new JsonResponse($approvedComments->toArray());
     }
 
     /**
@@ -39,13 +37,13 @@ class CommentsController extends Controller
             $comment = $this->commentService->create($request->input(), $post);
             $this->commentNotifyService->notify($post);
             $data = CommentResource::make($comment)->resolve();
-            return new ApiResponse($data);
+            return new JsonResponse($data);
         } catch (AuthorizationException $e) {
             Log::error("Error adding comment: " . $e->getMessage());
-            return new ApiResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
         } catch (\Exception $e) {
             Log::error("Error added post: " . $e->getMessage());
-            return new ApiResponse(
+            return new JsonResponse(
                 ['error' => 'Failed to add comment. Please try again.'],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -59,13 +57,13 @@ class CommentsController extends Controller
     {
         try {
             $comment->updateOrFail($request->input());
-            return new ApiResponse(['Updated post successfully']);
+            return new JsonResponse(['Updated post successfully']);
         } catch (AuthorizationException $e) {
             Log::error("Error updating comment: " . $e->getMessage());
-            return new ApiResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
         } catch (\Exception $e) {
             Log::error("Error updating post: " . $e->getMessage());
-            return new ApiResponse(
+            return new JsonResponse(
                 ['error' => 'Failed to updating comment. Please try again.'],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR
             );
@@ -79,13 +77,13 @@ class CommentsController extends Controller
     {
         try {
            $comment->deleteOrFail();
-            return new ApiResponse(['Deleted post successfully']);
+            return new JsonResponse(['Deleted post successfully']);
         } catch (AuthorizationException $e) {
             Log::error("Error deleting comment: " . $e->getMessage());
-            return new ApiResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
         } catch (\Exception $e) {
             Log::error("Error deleting post: " . $e->getMessage());
-            return new ApiResponse(
+            return new JsonResponse(
                 ['error' => 'Failed to deleting comment. Please try again.'],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR
             );

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostsRequest;
 use App\Http\Requests\UpdatePostsRequest;
 use App\Http\Resources\PostResource;
-use App\Http\Responses\ApiResponse;
 use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -23,7 +22,7 @@ class PostsController extends Controller
     public function index()
     {
         $posts = Post::paginate(10);
-        return new ApiResponse($posts);
+        return new JsonResponse($posts);
     }
 
     public function store(StorePostsRequest $request)
@@ -31,33 +30,33 @@ class PostsController extends Controller
         try {
             $post = $this->postService->create($request->input(), auth()->user()->getAuthIdentifier());
             $data = PostResource::make($post)->resolve();
-            return new ApiResponse($data);
+            return new JsonResponse($data);
         } catch (AuthorizationException $e) {
             Log::error("Error adding post: " . $e->getMessage());
-            return new ApiResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
         } catch (\Exception $e) {
             Log::error("Error added post: " . $e->getMessage());
-            return new ApiResponse(['error' => 'Failed to add post. Please try again.'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['error' => 'Failed to add post. Please try again.'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function show(Post $post)
     {
         $data = PostResource::make($post)->resolve();
-        return new ApiResponse($data);
+        return new JsonResponse($data);
     }
 
     public function update(UpdatePostsRequest $request, Post $post)
     {
         try {
             $post->updateOrFail($request->input());
-            return new ApiResponse(['Updated post successfully']);
+            return new JsonResponse(['Updated post successfully']);
         } catch (AuthorizationException $e) {
             Log::error("Error updating post: " . $e->getMessage());
-            return new ApiResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
         } catch (\Exception $e) {
             Log::error("Error updating post: " . $e->getMessage());
-            return new ApiResponse(['error' => 'Failed to updating post. Please try again.'],
+            return new JsonResponse(['error' => 'Failed to updating post. Please try again.'],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR
             );
         }
@@ -69,13 +68,13 @@ class PostsController extends Controller
 
         try {
             $post->deleteOrFail();
-            return new ApiResponse(['Deleted post successfully']);
+            return new JsonResponse(['Deleted post successfully']);
         } catch (AuthorizationException $e) {
             Log::error("Error deleting post: " . $e->getMessage());
-            return new ApiResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
+            return new JsonResponse(['error' => 'Permission denied.'], JsonResponse::HTTP_FORBIDDEN);
         } catch (\Exception $e) {
             Log::error("Error deleting post: " . $e->getMessage());
-            return new ApiResponse(['error' => 'Failed to deleting post. Please try again.'],
+            return new JsonResponse(['error' => 'Failed to deleting post. Please try again.'],
                 JsonResponse::HTTP_INTERNAL_SERVER_ERROR
             );
         }
