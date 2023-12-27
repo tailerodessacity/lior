@@ -19,10 +19,13 @@ class CommentNotifyService
             return $email != $currentUserEmail;
         });
 
-        $batch = Bus::batch([])->then(function (Batch $batch) {
+        $batch = Bus::batch([]
+        )->progress(function(Batch $batch){
+            Log::info('A single job has completed successfully');
+        })->then(function (Batch $batch) {
             Log::info('jobs completed successfully');
-        })->catch(function (Batch $batch, Throwable $e) {
-            
+        })->catch(function (Batch $batch, \Throwable $e) {
+
         })->finally(function (Batch $batch) {
             Log::info('batch has finished executing');
         })->name('Add New Comment Notification')
