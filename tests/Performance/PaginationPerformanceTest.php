@@ -19,13 +19,20 @@ class PaginationPerformanceTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $this->createUserAndRoles();
+        Post::factory(10000)->create();
     }
 
     public function testFirstPagePerformance()
     {
-        $this->createUserAndRoles();
+        $startTime = microtime(true);
+        $response = $this->get('/api/posts?page=1');
+        $endTime = microtime(true);
 
-        Post::factory(10000)->create();
+        $response->assertStatus(200);
+        $executionTime = $endTime - $startTime;
+
+        dump("Later Page Execution Time: {$executionTime} seconds");
 
         $startTime = microtime(true);
         $response = $this->get('/api/posts?page=1');
@@ -34,24 +41,15 @@ class PaginationPerformanceTest extends TestCase
         $response->assertStatus(200);
         $executionTime = $endTime - $startTime;
 
-        // Output or log the execution time
         dump("First Page Execution Time: {$executionTime} seconds");
-    }
-
-    public function testLaterPagePerformance()
-    {
-        $this->createUserAndRoles();
-
-        Post::factory(10000)->create();
 
         $startTime = microtime(true);
-        $response = $this->get('/api/posts?page?page=990');
+        $response = $this->get('/api/posts?page=900');
         $endTime = microtime(true);
 
         $response->assertStatus(200);
         $executionTime = $endTime - $startTime;
 
-        // Output or log the execution time
         dump("Later Page Execution Time: {$executionTime} seconds");
     }
 

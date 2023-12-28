@@ -8,12 +8,15 @@ use App\Http\Requests\StorePostsRequest;
 use App\Http\Requests\UpdatePostsRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use App\Pagination\CustomPaginator;
 use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
 class PostsController extends Controller
 {
+    private const PER_PAGE = 10;
+
     public function __construct(
         private readonly PostService $postService
     )
@@ -25,8 +28,12 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $posts = Post::paginate(10);
+        $currentPage = request('page', 1);
+
+        $posts = CustomPaginator::create(Post::class, self::PER_PAGE, $currentPage);
+
         return new JsonResponse($posts);
+
     }
 
     /**
