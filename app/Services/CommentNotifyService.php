@@ -11,30 +11,31 @@ use Illuminate\Support\Facades\Log;
 
 class CommentNotifyService
 {
-    public function notify(Post $post)
+    public function notify(Post $post, string $currentUserEmail)
     {
-        $currentUserEmail = auth()->user()->getEmail();
-
         $filterComments = $post->comments->unique('email')->filter(function (string $email) use ($currentUserEmail) {
             return $email != $currentUserEmail;
         });
 
-        $batch = Bus::batch([]
-        )->progress(function(Batch $batch){
-            Log::info('A single job has completed successfully');
-        })->then(function (Batch $batch) {
-            Log::info('jobs completed successfully');
-        })->catch(function (Batch $batch, \Throwable $e) {
-
-        })->finally(function (Batch $batch) {
-            Log::info('batch has finished executing');
-        })->name('Add New Comment Notification')
-            ->onQueue('new_comment_notification_email')
-            ->allowFailures(false)
-            ->dispatch();
+        $jobs = [];
 
         foreach ($filterComments as $comment) {
-            $batch->add(new SendCommentNotification($comment, new AddNewComment()));
+            $jobs[] = new SendCommentNotification($comment, new AddNewComment());
         }
+
+        $batch = Bus::batch($jobs)
+            ->then(function (Batch $batch) {
+                Log::info('Comments notifier: completed successfully');
+            })->finally(function (Batch $batch) {
+                $countSuccessfullyJobsCompleted = $batch->totalJobs - $batch->failedJobs;
+                Log::info(sprintf(
+                    'Comments notifier: total failed jobs %s and successfully completed %s', $batch->failedJobs, $countSuccessfullyJobsCompleted
+                ));
+            })->name('Notification About New Comment')
+            ->onQueue('notification_comments')
+            ->dispatch();
+
+        return $batch;
+
     }
 }

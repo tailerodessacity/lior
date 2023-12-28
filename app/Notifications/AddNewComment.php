@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AddNewComment extends Notification implements ShouldQueue
+class AddNewComment extends Notification
 {
     use Queueable;
 
@@ -59,7 +59,7 @@ class AddNewComment extends Notification implements ShouldQueue
     public function viaQueues(): array
     {
         return [
-            'mail' => 'notification_comments',
+
         ];
     }
 }

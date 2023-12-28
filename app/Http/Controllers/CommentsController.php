@@ -42,7 +42,8 @@ class CommentsController extends Controller
     {
         try {
             $comment = $this->commentService->create($request->input(), $post);
-            $this->commentNotifyService->notify($post);
+            $currentUserEmail = auth()->user()->getEmail();
+            $this->commentNotifyService->notify($post, $currentUserEmail);
             $data = CommentResource::make($comment)->resolve();
             return new JsonResponse($data);
         } catch (\Exception $e) {
