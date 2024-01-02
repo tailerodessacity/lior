@@ -28,12 +28,11 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $currentPage = request('page', 1);
+        $page = request('page', 1);
+        $perPage = 10;
 
-        $posts = CustomPaginator::create(Post::class, self::PER_PAGE, $currentPage);
-
+        $posts = CustomPaginator::create($page, $perPage);
         return new JsonResponse($posts);
-
     }
 
     /**

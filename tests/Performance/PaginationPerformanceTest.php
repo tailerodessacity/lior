@@ -25,14 +25,18 @@ class PaginationPerformanceTest extends TestCase
 
     public function testFirstPagePerformance()
     {
+//        $posts = Post::orderBy('created_at')->cursorPaginate(10);
+
         $startTime = microtime(true);
-        $response = $this->get('/api/posts?page=1');
+        $response = $this->get('/api/posts');
         $endTime = microtime(true);
 
         $response->assertStatus(200);
         $executionTime = $endTime - $startTime;
 
         dump("Later Page Execution Time: {$executionTime} seconds");
+
+//        $nextPageUrl = json_decode($response->getContent(), true)['next_cursor'];
 
         $startTime = microtime(true);
         $response = $this->get('/api/posts?page=1');
@@ -44,7 +48,7 @@ class PaginationPerformanceTest extends TestCase
         dump("First Page Execution Time: {$executionTime} seconds");
 
         $startTime = microtime(true);
-        $response = $this->get('/api/posts?page=900');
+        $response = $this->get('/api/posts?page=750');
         $endTime = microtime(true);
 
         $response->assertStatus(200);
