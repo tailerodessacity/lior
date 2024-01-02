@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use Database\Factories\PostsFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Traits\HasRoles;
 
 class Post extends Model
 {
-    use HasFactory, HasRoles;
+    use HasUuids, HasFactory, HasRoles;
 
     protected $fillable = [
         'title',

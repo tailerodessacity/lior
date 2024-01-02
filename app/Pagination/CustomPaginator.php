@@ -2,27 +2,26 @@
 
 namespace App\Pagination;
 
+use App\Models\Post;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 
 class CustomPaginator extends Paginator
 {
     /**
-     * @param $model
-     * @param $perPage
-     * @param $currentPage
-     * @param array $options
-     * @return static
+     * @param string $page
+     * @param int $perPage
+     * @return CustomPaginator
      */
-    public static function create($model, $perPage, $currentPage = null, array $options = [])
+    public static function create(string $page, int $perPage)
     {
-        $model = app($model);
-        $prevPage = $currentPage - 1;
-        $query = $model::where('id', '>', $prevPage * $perPage);
+        $offset = ($page - 1) * $perPage;
 
-        $results = $query->orderBy('id')
+        $posts = Post::from(DB::raw('(SELECT title, preview, detail, ROW_NUMBER() OVER (ORDER BY created_at) AS num FROM posts) as OrderedRows'))
+            ->whereBetween('num', [$offset + 1, $offset + $perPage])
             ->take($perPage)
             ->get();
 
-        return new static($results, $perPage, $currentPage, $options);
+        return new static($posts, $perPage);
     }
 }

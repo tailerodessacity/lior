@@ -22,6 +22,7 @@ class PostsFactory extends Factory
     public function definition(): array
     {
         return [
+            'id' => $this->faker->uuid,
             'title' => $this->faker->sentence,
             'slug' => $this->faker->slug,
             'is_approved' => $this->faker->boolean,
