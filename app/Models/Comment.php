@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\CommentsFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -10,7 +11,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class Comment extends Model
 {
-    use HasFactory, HasRoles,  Notifiable;
+    use HasUuids, HasFactory, HasRoles,  Notifiable;
 
     protected $fillable = [
         'name',
