@@ -31,7 +31,9 @@ class PostsController extends Controller
         $page = request('page', 1);
         $perPage = 10;
 
-        $posts = CustomPaginator::create($page, $perPage);
+        $query = Post::select(['id', 'title', 'preview', 'detail']);
+        $posts = CustomPaginator::create($query, 'posts', $page, $perPage);
+//        $posts = Post::quiqPaginate($query, $page, $perPage);
         return new JsonResponse($posts);
     }
 
@@ -100,4 +102,6 @@ class PostsController extends Controller
             );
         }
     }
+
+    public function show(Event $event)
 }
